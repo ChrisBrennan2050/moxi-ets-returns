@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOXI — ETS Forest Returns</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── UPDATE THIS MONTHLY ───────────────────────────── */
+/* Current NZU 12-month volume weighted average price  */
+/* Source: EMS Tradepoint                              */
+:root { --NZU_PRICE: 50.25; }
+/* ─────────────────────────────────────────────────── */
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;padding:40px 24px;min-height:100vh;}
+.tag{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:10px;}
+.ttl{font-family:'Raleway',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;}
+.client-addr{font-family:'Raleway',sans-serif;font-size:15px;font-weight:700;color:#CFAF50;margin-bottom:6px;display:none;}
+.divider{width:44px;height:3px;background:#CFAF50;margin-bottom:20px;}
+.sub{color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin-bottom:28px;max-width:520px;}
+.card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(207,175,80,0.2);border-radius:8px;padding:24px;margin-bottom:18px;}
+.lbl{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:8px;}
+.inp-hdr{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:8px;margin-bottom:4px;align-items:center;}
+.inp-hdr span{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.inp-hdr .ctr{text-align:center;}
+.inp-row{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:8px;align-items:center;margin-bottom:8px;transition:opacity 0.2s;}
+.inp-row.hidden-row{opacity:0.22;}
+select,input[type=number]{background:rgba(255,255,255,0.07);border:0.5px solid rgba(207,175,80,0.3);border-radius:4px;color:#fff;font-size:12px;padding:7px 8px;width:100%;outline:none;font-family:'Lato',sans-serif;}
+select option{background:#1a2420;color:#fff;}
+.btn-eye{background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:4px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.15s;}
+.btn-eye:hover{border-color:rgba(207,175,80,0.5);}
+.btn-eye.eye-off{border-color:rgba(255,255,255,0.07);}
+.btn-del{background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:4px;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-del:hover{color:#D85A30;border-color:rgba(216,90,48,0.4);}
+.btn-add{background:rgba(207,175,80,0.1);border:0.5px solid rgba(207,175,80,0.4);border-radius:4px;color:#CFAF50;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;cursor:pointer;font-family:'Lato',sans-serif;margin-top:4px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
+.stat{background:rgba(255,255,255,0.05);border:0.5px solid rgba(207,175,80,0.12);border-radius:6px;padding:12px 10px;}
+.slbl{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;}
+.snum{font-size:18px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
+.snum.neg{color:#D85A30;}
+.ssub{font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px;}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0 0 6px;}
+.explainer{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.65;margin-bottom:14px;}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;}
+.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.4);}
+.lsq{width:10px;height:10px;border-radius:2px;}
+.chart-wrap{position:relative;width:100%;}
+.tooltip-box{position:absolute;background:rgba(10,20,16,0.97);border:0.5px solid rgba(207,175,80,0.35);border-radius:5px;padding:8px 12px;font-size:12px;color:#fff;pointer-events:none;display:none;z-index:10;min-width:140px;}
+.tooltip-box .ty{color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:4px;}
+.tooltip-box .tv{color:#CFAF50;font-weight:700;font-size:13px;}
+.tooltip-box .tv2{color:#5DCAA5;font-size:11px;}
+.tooltip-box .tv3{color:rgba(207,175,80,0.5);font-size:11px;}
+.irr-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.irr-card{background:rgba(207,175,80,0.06);border:0.5px solid rgba(207,175,80,0.2);border-radius:6px;padding:12px 14px;}
+.irr-lbl{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.irr-val{font-size:16px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
+.btn-export{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:10px 20px;border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;display:inline-flex;align-items:center;gap:8px;background:rgba(93,202,165,0.12);border:0.5px solid rgba(93,202,165,0.4);color:#5DCAA5;margin-top:16px;}
+.btn-export:hover{background:rgba(93,202,165,0.2);}
+.disclaim{font-size:11px;color:rgba(255,255,255,0.2);margin-top:20px;line-height:1.7;}
+.prefilled-banner{background:rgba(207,175,80,0.07);border:0.5px solid rgba(207,175,80,0.25);border-radius:6px;padding:10px 14px;margin-bottom:18px;font-size:12px;color:rgba(255,255,255,0.55);display:none;}
+.prefilled-banner strong{color:#CFAF50;}
+@media(max-width:540px){
+  body{padding:28px 14px;}
+  .stats{grid-template-columns:1fr 1fr;}
+  .irr-row{grid-template-columns:1fr;}
+  .inp-hdr,.inp-row{grid-template-columns:1fr 1fr 36px 36px;}
+  .inp-hdr span:nth-child(3),.inp-row input:nth-child(3){display:none;}
+}
+</style>
+</head>
+<body>
+
+<span class="tag">Forest carbon returns</span>
+<div class="client-addr" id="client-addr"></div>
+<div class="ttl">What could your forest earn?</div>
+<div class="divider"></div>
+<div class="prefilled-banner" id="prefilled-banner">
+  This estimate has been prepared for <strong id="banner-addr"></strong> by MOXI based on your eligibility assessment.
+</div>
+<p class="sub">Your forest areas are pre-filled below based on your eligibility assessment. You can also add future planting areas to see how additional forest would affect your returns.</p>
+
+<div class="card">
+  <span class="lbl">Forest areas</span>
+  <div class="inp-hdr">
+    <span>Species</span><span>Area (ha)</span><span>Est. year</span><span class="ctr">Show</span><span></span>
+  </div>
+  <div id="rows"></div>
+  <button class="btn-add" id="btn-add">+ Add forest area</button>
+</div>
+
+<div class="card" id="results-card" style="display:none;">
+  <div class="stats" id="stats"></div>
+
+  <div style="margin-bottom:20px;">
+    <div class="sec-title">Annual net earnings</div>
+    <p class="explainer">Each bar shows what your forest is expected to earn in that year after all costs. The first year (2026) shows a negative figure — this is the registration cost, which is a one-off. Gold bars are positive earning years.</p>
+    <div class="chart-wrap" style="height:220px;">
+      <canvas id="c-ann" role="img" aria-label="Annual net earnings bar chart balanced scenario">Annual net earnings chart</canvas>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="lsq" style="background:#CFAF50"></span>Balanced</span>
+    <span><span class="lsq" style="background:rgba(207,175,80,0.35);border:1px dashed #CFAF50"></span>Pessimistic</span>
+    <span><span class="lsq" style="background:#5DCAA5"></span>Optimistic</span>
+  </div>
+
+  <div style="margin-bottom:8px;">
+    <div class="sec-title">Cumulative net earnings</div>
+    <p class="explainer">This shows your total earnings building up over 25 years. Hover or drag across the chart to see the projected total at any point. The base carbon price used is the current 12-month volume weighted average NZU price from EMS Tradepoint. Three scenarios are shown — balanced assumes a 2% annual price increase, pessimistic assumes prices stay flat, and optimistic assumes a 3% annual increase.</p>
+    <div class="chart-wrap" style="height:240px;">
+      <canvas id="c-cum" role="img" aria-label="Cumulative net earnings line chart three scenarios">Cumulative net earnings chart</canvas>
+      <div class="tooltip-box" id="cum-tooltip">
+        <div class="ty" id="tt-year"></div>
+        <div class="tv" id="tt-bal"></div>
+        <div class="tv2" id="tt-opt"></div>
+        <div class="tv3" id="tt-pes"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;margin-bottom:8px;">
+    <div class="sec-title">Internal rate of return (IRR)</div>
+    <p class="explainer">IRR is a way of measuring the overall return on an investment, similar to an interest rate. The higher the number, the stronger the return relative to what you put in. It takes into account both the costs and the timing of income over the 25-year period.</p>
+  </div>
+  <div class="irr-row" id="irr-row"></div>
+
+  <button class="btn-export" id="btn-csv">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M1 10v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="#5DCAA5" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Download detailed data (CSV)
+  </button>
+
+  <p class="disclaim">Projections use MPI ETS standard carbon lookup tables. Redwood and exotic hardwood figures are based on proposed new New Zealand lookup tables and are subject to change. Returns are estimates only and subject to NZU price fluctuations. Registration costs include MOXI fees and MPI area-based registration fee. MPI annual levy $14.90/ha applies from year 1 (waived for native forest under 6 years of age).</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+const CY=2026;
+const NZU_BASE=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--NZU_PRICE'))||50.25;
+const REG=8000, MGMT=1500;
+const CATS=['Indigenous ETS Forest','Exotic Hardwoods ETS Forest','Exotic Softwoods ETS Forest','Pinus Radiata ETS Forest','Redwood ETS Forest'];
+const MPI_TIERS=[[10,488.89],[50,1815],[100,1980],[500,2640],[99999,4125]];
+function mpiReg(ha){for(const[k,v]of MPI_TIERS){if(ha<k)return v;}return 4125;}
+
+const EYE_ON=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="#CFAF50" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="#CFAF50" stroke-width="1.3"/></svg>`;
+const EYE_OFF=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.3"/><line x1="2" y1="2" x2="14" y2="14" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+
+const DELTA={
+  'Indigenous ETS Forest':[0,0.6,0.6,1.3,2.1,3.2,4.3,5.4,6.5,7.6,8.6,9.6,10.5,11.2,11.8,12.2,12.6,12.7,12.8,12.7,12.4,12.2,11.7,11.3,10.8,10.3,9.6,9.1,8.5,7.9,7.4,6.8,6.3,5.7,5.3,4.9,4.4,4.1,3.7,3.3,3.1,2.7,2.6,2.2,2.1,1.8,1.7],
+  'Exotic Hardwoods ETS Forest':[0,0.3,1.7,5,17,27,28,35,39,42,43,45,46,26,25,26,26,26,25,22,27,30,32,35,35,36,37,37,36,37,36,35,35,35,34,33,32,32,31,30,30,28,28,27,26,26,25],
+  'Exotic Softwoods ETS Forest':[0,0.2,0.8,2,9,14,19,18,14,10,8,11,12,14,15,16,17,17,17,18,17,17,17,16,16,15,14,15,14,14,13,14,13,13,12,13,12,12,12,11,12,12,11,12,11,12,11],
+  'Redwood ETS Forest':[0,0,0.1,0.9,0,2,7,12,17,21,26,28,16,18,20,23,24,26,28,29,31,32,34,35,35,37,38,39,40,41,41,43,43,43,44,45,45,45,46,47,46,48,47,48,48,48,49],
+  'Pinus Radiata ETS Forest':{
+    'Bay of Plenty':[0,0.4,1.6,4,18,27,33,34,25,12,14,19,24,27,30,31,33,34,34,34,33,33,32,31,29,29,28,27,27,26,25,25,24,24,23,22,23,21,21,21,21,21,20,21,20,20,21],
+    'Waikato/Taupo':[0,0.4,2.6,4,18,25,34,27,19,12,21,25,30,31,34,35,36,37,37,36,36,36,34,33,33,30,30,30,29,28,28,27,27,26,25,25,24,25,23,24,23,23,23,24,23,23,23],
+    'Auckland':[0,0.5,2.5,5,21,30,39,33,22,13,22,29,32,34,37,37,39,39,38,38,38,36,35,33,32,30,30,28,28,27,27,25,25,25,24,23,23,22,22,22,22,22,22,22,22,22,22],
+    'Gisborne':[0,0.6,3.4,6,27,40,44,41,28,11,18,23,28,32,34,36,38,37,38,37,36,36,34,33,31,30,29,28,28,27,27,25,26,25,24,24,24,23,23,24,23,23,23,24,24,24,24],
+    'Hawkes Bay/SNI':[0,0.5,2.5,6,25,37,42,42,30,12,13,23,27,31,34,36,37,38,37,37,37,35,35,33,31,31,29,28,28,28,27,26,25,26,24,25,24,24,24,23,24,24,23,24,24,25,25],
+    'Nelson/Marlborough':[0,0.2,0.8,2,9,16,20,25,27,17,15,12,17,21,24,26,28,30,32,31,33,32,32,32,31,30,30,30,29,29,29,28,27,27,27,26,25,25,25,24,23,24,23,22,23,22,22],
+    'Canterbury/West Coast':[0,0.2,0.8,1,3,10,16,22,23,25,24,14,11,8,12,16,19,21,23,25,26,26,27,27,28,27,26,27,27,27,27,26,26,26,25,25,25,24,24,23,23,23,22,22,22,21,21],
+    'Otago':[0,0.3,1.7,3,4,17,23,23,22,30,17,5,10,16,20,22,26,28,30,31,32,33,32,32,32,31,31,31,30,31,30,29,29,29,28,28,28,27,27,26,26,27,25,26,25,26,25],
+    'Southland':[0,0.2,0.8,2,11,21,30,34,35,26,14,7,17,21,25,28,30,32,33,34,34,35,34,34,33,33,31,32,31,31,31,30,30,29,29,28,28,28,27,27,27,27,27,26,26,27,26],
+  }
+};
+
+function getDelta(cat,region,age){
+  if(age<0)return 0;
+  let tbl=cat==='Pinus Radiata ETS Forest'?DELTA[cat][region]||DELTA[cat]['Bay of Plenty']:DELTA[cat];
+  if(!tbl)return 0;
+  return tbl[Math.min(Math.round(age),tbl.length-1)]||0;
+}
+function buildStock(f,region){
+  let cum=0,rows=[];
+  for(let i=0;i<=25;i++){cum+=getDelta(f.cat,region,CY-f.yr+i);rows.push(cum*f.ha);}
+  return rows;
+}
+function nzuPrice(sc,i){
+  if(sc==='pes')return NZU_BASE;
+  if(sc==='bal')return NZU_BASE*Math.pow(1.02,i);
+  return NZU_BASE*Math.pow(1.03,i);
+}
+function calcMpi(yi,active){
+  if(yi===0)return 0;
+  return Math.round(active.reduce((s,f)=>{
+    const age=CY-f.yr+yi;
+    if(f.cat==='Indigenous ETS Forest'&&age<6)return s;
+    return s+f.ha*14.9;
+  },0));
+}
+function fmtC(v){
+  if(v===0)return '-';
+  const a=Math.abs(Math.round(v));
+  return v<0?'($'+a.toLocaleString('en-NZ')+')':'$'+a.toLocaleString('en-NZ');
+}
+function fmtK(v){const a=Math.abs(v);return(v<0?'-':'')+'$'+(a>=1000?Math.round(a/1000)+'k':Math.round(a));}
+
+function calcProj(sc,active,region){
+  const totalHa=active.reduce((s,f)=>s+f.ha,0);
+  const mpiR=mpiReg(totalHa);
+  const stocks=active.map(f=>buildStock(f,region));
+  let prev=0,cum=0,rows=[];
+  for(let i=0;i<=25;i++){
+    const stock=stocks.reduce((s,t)=>s+t[i],0);
+    const change=stock-prev;
+    const price=nzuPrice(sc,i);
+    const rev=i===0?0:Math.max(0,Math.round(change*price));
+    const costs=i===0?-(REG+mpiR+calcMpi(i,active)):-(MGMT+calcMpi(i,active));
+    const net=Math.round(rev+costs);
+    cum+=net;
+    rows.push({year:CY+i,stock:Math.round(stock*10)/10,change:Math.round(change*10)/10,price:Math.round(price*100)/100,rev,costs:Math.round(costs),net,cum:Math.round(cum)});
+    prev=stock;
+  }
+  return rows;
+}
+
+function irr(cf){
+  let r=0.5;
+  for(let i=0;i<200;i++){
+    let n=0,d=0;
+    cf.forEach((c,j)=>{const x=Math.pow(1+r,j);n+=c/x;d-=j*c/Math.pow(1+r,j+1);});
+    if(Math.abs(d)<1e-12)break;
+    const nr=r-n/d;if(Math.abs(nr-r)<1e-9){r=nr;break;}
+    r=Math.max(-0.99,nr);
+  }
+  return isFinite(r)&&r>-1?Math.round(r*1000)/10:null;
+}
+
+let forests=[{id:1,cat:'Indigenous ETS Forest',ha:10,yr:2010,on:true}];
+let nid=2,region='Bay of Plenty';
+let cc=null,ca=null,lastBal=null,lastPes=null,lastOpt=null,lastActive=[];
+
+function loadFromHash(){
+  const hash=window.location.hash.slice(1);
+  if(!hash)return;
+  try{
+    const d=JSON.parse(atob(hash));
+    if(d.address){
+      document.getElementById('client-addr').textContent=d.address;
+      document.getElementById('client-addr').style.display='block';
+      document.getElementById('banner-addr').textContent=d.address;
+      document.getElementById('prefilled-banner').style.display='block';
+      document.title='MOXI Returns — '+d.address;
+    }
+    if(d.region)region=d.region;
+    if(d.forests&&d.forests.length){
+      forests=d.forests.map((f,i)=>({id:i+1,cat:f.cat,ha:f.ha,yr:f.yr,on:true}));
+      nid=forests.length+1;
+    }
+  }catch(e){}
+}
+
+function renderRows(){
+  const el=document.getElementById('rows');
+  el.innerHTML=forests.map(f=>`
+    <div class="inp-row${f.on?'':' hidden-row'}" data-id="${f.id}">
+      <select class="fc" data-id="${f.id}">${CATS.map(c=>`<option value="${c}"${c===f.cat?' selected':''}>${c.replace(' ETS Forest','')}</option>`).join('')}</select>
+      <input type="number" class="fha" value="${f.ha}" min="0.1" max="999" step="0.1" data-id="${f.id}">
+      <input type="number" class="fyr" value="${f.yr}" min="1990" max="2025" step="1" data-id="${f.id}">
+      <button class="btn-eye ftog${f.on?'':' eye-off'}" data-id="${f.id}" title="${f.on?'Hide':'Show'}">${f.on?EYE_ON:EYE_OFF}</button>
+      <button class="btn-del fdel" data-id="${f.id}">×</button>
+    </div>`).join('');
+  el.querySelectorAll('.fc').forEach(e=>e.addEventListener('change',ev=>{forests.find(f=>f.id==ev.target.dataset.id).cat=ev.target.value;recalc();}));
+  el.querySelectorAll('.fha').forEach(e=>e.addEventListener('input',ev=>{forests.find(f=>f.id==ev.target.dataset.id).ha=parseFloat(ev.target.value)||0;recalc();}));
+  el.querySelectorAll('.fyr').forEach(e=>e.addEventListener('input',ev=>{forests.find(f=>f.id==ev.target.dataset.id).yr=parseInt(ev.target.value)||2000;recalc();}));
+  el.querySelectorAll('.ftog').forEach(e=>e.addEventListener('click',ev=>{
+    const btn=ev.currentTarget;
+    const f=forests.find(f=>f.id==btn.dataset.id);
+    f.on=!f.on;
+    btn.innerHTML=f.on?EYE_ON:EYE_OFF;
+    btn.classList.toggle('eye-off',!f.on);
+    btn.closest('.inp-row').classList.toggle('hidden-row',!f.on);
+    recalc();
+  }));
+  el.querySelectorAll('.fdel').forEach(e=>e.addEventListener('click',ev=>{forests=forests.filter(f=>f.id!=ev.target.dataset.id);renderRows();recalc();}));
+}
+
+function recalc(){
+  const active=forests.filter(f=>f.on&&f.ha>0);
+  lastActive=active;
+  const rc=document.getElementById('results-card');
+  if(active.length===0){rc.style.display='none';return;}
+  rc.style.display='block';
+
+  const bal=calcProj('bal',active,region);
+  const pes=calcProj('pes',active,region);
+  const opt=calcProj('opt',active,region);
+  lastBal=bal;lastPes=pes;lastOpt=opt;
+
+  const disp=bal;
+  const years=disp.map(r=>r.year);
+  const cumYears=bal.slice(1).map(r=>r.year);
+  const bep=bal.findIndex((r,i)=>i>0&&r.cum>0);
+  const totalHa=active.reduce((s,f)=>s+f.ha,0);
+  const mpiR=mpiReg(totalHa);
+  const irrBal=irr(bal.map(r=>r.net));
+  const irrPes=irr(pes.map(r=>r.net));
+  const irrOpt=irr(opt.map(r=>r.net));
+
+  const setupCost=REG+mpiR+calcMpi(0,active);
+  const yr1net=bal[1]?.net||0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="slbl">Forest area</div><div class="snum">${Math.round(totalHa*10)/10} ha</div><div class="ssub">Active areas</div></div>
+    <div class="stat"><div class="slbl">Setup cost</div><div class="snum neg">${fmtC(-setupCost)}</div><div class="ssub">Registration + MPI fee</div></div>
+    <div class="stat"><div class="slbl">Year 1 earnings</div><div class="snum ${yr1net>=0?'':'neg'}">${fmtC(yr1net)}</div><div class="ssub">First full year net</div></div>
+    <div class="stat"><div class="slbl">Breakeven</div><div class="snum">${bep>0?bal[bep].year:'—'}</div><div class="ssub">Cumulative positive</div></div>
+    <div class="stat"><div class="slbl">10-year total</div><div class="snum ${(bal[10]?.cum||0)>=0?'':'neg'}">${fmtC(bal[10]?.cum||0)}</div><div class="ssub">Balanced scenario</div></div>
+    <div class="stat"><div class="slbl">25-year total</div><div class="snum">${fmtC(bal[25]?.cum||0)}</div><div class="ssub">Balanced scenario</div></div>`;
+
+  document.getElementById('irr-row').innerHTML=`
+    <div class="irr-card"><div class="irr-lbl">Balanced — IRR</div><div class="irr-val">${irrBal!==null?irrBal+'%':'—'}</div></div>
+    <div class="irr-card"><div class="irr-lbl">Pessimistic — IRR</div><div class="irr-val">${irrPes!==null?irrPes+'%':'—'}</div></div>
+    <div class="irr-card"><div class="irr-lbl">Optimistic — IRR</div><div class="irr-val">${irrOpt!==null?irrOpt+'%':'—'}</div></div>`;
+
+  if(cc)cc.destroy();
+  if(ca)ca.destroy();
+
+  const isMobile=window.innerWidth<540;
+
+  ca=new Chart(document.getElementById('c-ann'),{
+    type:'bar',
+    data:{labels:years,datasets:[{label:'Annual net',data:disp.map(r=>r.net),backgroundColor:disp.map(r=>r.net>=0?'rgba(207,175,80,0.75)':'rgba(216,90,48,0.75)'),borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,20,16,0.97)',borderColor:'rgba(207,175,80,0.3)',borderWidth:1,titleColor:'rgba(255,255,255,0.9)',bodyColor:'rgba(255,255,255,0.6)',callbacks:{label:ctx=>'Net earnings: '+fmtC(ctx.parsed.y)}}},
+      scales:{
+        x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:isMobile?9:10},maxRotation:isMobile?90:45,autoSkip:isMobile,maxTicksLimit:isMobile?8:26},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
+        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+      }
+    }
+  });
+
+  cc=new Chart(document.getElementById('c-cum'),{
+    type:'line',
+    data:{labels:cumYears,datasets:[
+      {label:'Optimistic',data:opt.slice(1).map(r=>r.cum),borderColor:'#5DCAA5',backgroundColor:'rgba(93,202,165,0.06)',fill:true,tension:0.35,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:'#5DCAA5',borderWidth:1.5},
+      {label:'Balanced',data:bal.slice(1).map(r=>r.cum),borderColor:'#CFAF50',backgroundColor:'rgba(207,175,80,0.08)',fill:true,tension:0.35,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:'#CFAF50',borderWidth:2},
+      {label:'Pessimistic',data:pes.slice(1).map(r=>r.cum),borderColor:'rgba(207,175,80,0.4)',borderDash:[4,3],backgroundColor:'transparent',tension:0.35,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'rgba(207,175,80,0.4)',borderWidth:1.5},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{enabled:false}
+      },
+      scales:{
+        x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},maxTicksLimit:7},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
+        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+      },
+      onHover:(evt,elements,chart)=>{
+        const tip=document.getElementById('cum-tooltip');
+        if(!elements||elements.length===0){tip.style.display='none';return;}
+        const idx=elements[0].index;
+        const balV=opt.slice(1)[idx]?.cum;
+        const optV=opt.slice(1)[idx]?.cum;
+        const pesV=pes.slice(1)[idx]?.cum;
+        const balVV=bal.slice(1)[idx]?.cum;
+        document.getElementById('tt-year').textContent=cumYears[idx];
+        document.getElementById('tt-bal').textContent='Balanced: '+fmtC(balVV);
+        document.getElementById('tt-opt').textContent='Optimistic: '+fmtC(optV);
+        document.getElementById('tt-pes').textContent='Pessimistic: '+fmtC(pesV);
+        const canvasRect=document.getElementById('c-cum').getBoundingClientRect();
+        const wrapRect=document.getElementById('c-cum').parentElement.getBoundingClientRect();
+        const x=evt.native.clientX-wrapRect.left;
+        const y=evt.native.clientY-wrapRect.top;
+        const tipW=150;
+        tip.style.left=(x+tipW>wrapRect.width?x-tipW-8:x+12)+'px';
+        tip.style.top=Math.max(0,y-40)+'px';
+        tip.style.display='block';
+      }
+    }
+  });
+
+  const cumCanvas=document.getElementById('c-cum');
+  cumCanvas.addEventListener('mouseleave',()=>{document.getElementById('cum-tooltip').style.display='none';});
+  cumCanvas.addEventListener('touchend',()=>{setTimeout(()=>{document.getElementById('cum-tooltip').style.display='none';},2000);});
+}
+
+function downloadCSV(){
+  if(!lastBal)return;
+  const lines=['MOXI ETS Returns Analysis'];
+  const addr=document.getElementById('client-addr').textContent;
+  if(addr)lines.push(`Property,${addr}`);
+  lines.push(`ETS Region,${region}`,`NZU base price,$${NZU_BASE}`,`Generated,${new Date().toLocaleDateString('en-NZ')}`,'');
+  lines.push('Forest Areas','Species,Area (ha),Est. Year');
+  lastActive.forEach(f=>lines.push(`"${f.cat}",${f.ha},${f.yr}`));
+  lines.push('');
+  lines.push(['','Year 0',...lastBal.slice(1).map(r=>r.year)].join(','));
+  function addRow(lbl,vals){lines.push([`"${lbl}"`,...vals.map(v=>Math.round(v)===0?'-':Math.round(v))].join(','));}
+  lines.push('Carbon Stock');
+  addRow('Total carbon stock (t)',lastBal.map(r=>r.stock));
+  addRow('Annual change (t)',lastBal.map(r=>r.change));
+  lines.push('','Costs');
+  addRow('Total costs',lastBal.map(r=>r.costs));
+  lines.push('','Balanced Scenario (2% pa NZU growth)');
+  addRow('NZU price',lastBal.map(r=>r.price));
+  addRow('Annual carbon revenue',lastBal.map(r=>r.rev));
+  addRow('Net earnings',lastBal.map(r=>r.net));
+  addRow('Cumulative net earnings',lastBal.map(r=>r.cum));
+  lines.push('','Pessimistic Scenario (flat NZU price)');
+  addRow('Net earnings',lastPes.map(r=>r.net));
+  addRow('Cumulative net earnings',lastPes.map(r=>r.cum));
+  lines.push('','Optimistic Scenario (3% pa NZU growth)');
+  addRow('Net earnings',lastOpt.map(r=>r.net));
+  addRow('Cumulative net earnings',lastOpt.map(r=>r.cum));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  a.download=`MOXI_ETS_Returns${addr?'_'+addr.replace(/[^a-zA-Z0-9]/g,'_'):''}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+document.getElementById('btn-add').addEventListener('click',()=>{forests.push({id:nid++,cat:'Indigenous ETS Forest',ha:5,yr:2015,on:true});renderRows();recalc();});
+document.getElementById('btn-csv').addEventListener('click',downloadCSV);
+
+loadFromHash();
+renderRows();
+recalc();
+})();
+</script>
+</body>
+</html>
