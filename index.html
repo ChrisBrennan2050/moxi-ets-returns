@@ -13,63 +13,93 @@
 /* ─────────────────────────────────────────────────── */
 
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;padding:40px 24px;min-height:100vh;}
+body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;min-height:100vh;}
+
+/* ── Page shell ── */
+.page{max-width:860px;margin:0 auto;padding:56px 48px 80px;}
+
 .tag{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:10px;}
-.ttl{font-family:'Raleway',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;}
-.client-addr{font-family:'Raleway',sans-serif;font-size:15px;font-weight:700;color:#CFAF50;margin-bottom:6px;display:none;}
-.divider{width:44px;height:3px;background:#CFAF50;margin-bottom:20px;}
-.sub{color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin-bottom:28px;max-width:520px;}
-.card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(207,175,80,0.2);border-radius:8px;padding:24px;margin-bottom:18px;}
-.lbl{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:8px;}
-.inp-hdr{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:8px;margin-bottom:4px;align-items:center;}
+.ttl{font-family:'Raleway',sans-serif;font-size:32px;font-weight:800;color:#fff;margin-bottom:6px;}
+.client-addr{font-family:'Raleway',sans-serif;font-size:16px;font-weight:700;color:#CFAF50;margin-bottom:6px;display:none;}
+.divider{width:44px;height:3px;background:#CFAF50;margin-bottom:22px;}
+.sub{color:rgba(255,255,255,0.5);font-size:15px;line-height:1.75;margin-bottom:32px;max-width:560px;}
+
+.card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(207,175,80,0.2);border-radius:10px;padding:28px 32px;margin-bottom:20px;}
+
+.lbl{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:10px;}
+
+.inp-hdr{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:10px;margin-bottom:6px;align-items:center;}
 .inp-hdr span{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
 .inp-hdr .ctr{text-align:center;}
-.inp-row{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:8px;align-items:center;margin-bottom:8px;transition:opacity 0.2s;}
+
+.inp-row{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:10px;align-items:center;margin-bottom:10px;transition:opacity 0.2s;}
 .inp-row.hidden-row{opacity:0.22;}
-select,input[type=number]{background:rgba(255,255,255,0.07);border:0.5px solid rgba(207,175,80,0.3);border-radius:4px;color:#fff;font-size:12px;padding:7px 8px;width:100%;outline:none;font-family:'Lato',sans-serif;}
+
+select,input[type=number]{background:rgba(255,255,255,0.07);border:0.5px solid rgba(207,175,80,0.3);border-radius:4px;color:#fff;font-size:13px;padding:8px 10px;width:100%;outline:none;font-family:'Lato',sans-serif;}
 select option{background:#1a2420;color:#fff;}
+
 .btn-eye{background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:4px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.15s;}
 .btn-eye:hover{border-color:rgba(207,175,80,0.5);}
 .btn-eye.eye-off{border-color:rgba(255,255,255,0.07);}
+
 .btn-del{background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:4px;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .btn-del:hover{color:#D85A30;border-color:rgba(216,90,48,0.4);}
-.btn-add{background:rgba(207,175,80,0.1);border:0.5px solid rgba(207,175,80,0.4);border-radius:4px;color:#CFAF50;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;cursor:pointer;font-family:'Lato',sans-serif;margin-top:4px;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
-.stat{background:rgba(255,255,255,0.05);border:0.5px solid rgba(207,175,80,0.12);border-radius:6px;padding:12px 10px;}
-.slbl{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;}
-.snum{font-size:18px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
+
+.btn-add{background:rgba(207,175,80,0.1);border:0.5px solid rgba(207,175,80,0.4);border-radius:4px;color:#CFAF50;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 18px;cursor:pointer;font-family:'Lato',sans-serif;margin-top:6px;}
+
+/* ── Stats grid — 3 cols, balanced on desktop ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.stat{background:rgba(255,255,255,0.05);border:0.5px solid rgba(207,175,80,0.12);border-radius:8px;padding:16px 14px;}
+.slbl{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+.snum{font-size:20px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
 .snum.neg{color:#D85A30;}
-.ssub{font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px;}
-.sec-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0 0 6px;}
-.explainer{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.65;margin-bottom:14px;}
-.legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;}
-.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.4);}
+.ssub{font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;}
+
+.sec-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:0 0 8px;}
+.explainer{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:16px;}
+
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;}
+.legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.4);}
 .lsq{width:10px;height:10px;border-radius:2px;}
+
 .chart-wrap{position:relative;width:100%;}
-.tooltip-box{position:absolute;background:rgba(10,20,16,0.97);border:0.5px solid rgba(207,175,80,0.35);border-radius:5px;padding:8px 12px;font-size:12px;color:#fff;pointer-events:none;display:none;z-index:10;min-width:140px;}
-.tooltip-box .ty{color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:4px;}
+
+.tooltip-box{position:absolute;background:rgba(10,20,16,0.97);border:0.5px solid rgba(207,175,80,0.35);border-radius:5px;padding:10px 14px;font-size:12px;color:#fff;pointer-events:none;display:none;z-index:10;min-width:160px;}
+.tooltip-box .ty{color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:5px;}
 .tooltip-box .tv{color:#CFAF50;font-weight:700;font-size:13px;}
-.tooltip-box .tv2{color:#5DCAA5;font-size:11px;}
-.tooltip-box .tv3{color:rgba(207,175,80,0.5);font-size:11px;}
-.irr-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
-.irr-card{background:rgba(207,175,80,0.06);border:0.5px solid rgba(207,175,80,0.2);border-radius:6px;padding:12px 14px;}
-.irr-lbl{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
-.irr-val{font-size:16px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
-.btn-export{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:10px 20px;border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;display:inline-flex;align-items:center;gap:8px;background:rgba(93,202,165,0.12);border:0.5px solid rgba(93,202,165,0.4);color:#5DCAA5;margin-top:16px;}
+.tooltip-box .tv2{color:#5DCAA5;font-size:12px;margin-top:2px;}
+.tooltip-box .tv3{color:rgba(207,175,80,0.5);font-size:12px;margin-top:2px;}
+
+.section-gap{margin-bottom:32px;}
+
+.irr-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
+.irr-card{background:rgba(207,175,80,0.06);border:0.5px solid rgba(207,175,80,0.2);border-radius:8px;padding:16px 18px;}
+.irr-lbl{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.irr-val{font-size:18px;font-weight:800;font-family:'Raleway',sans-serif;color:#CFAF50;}
+
+.btn-export{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:11px 22px;border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;display:inline-flex;align-items:center;gap:8px;background:rgba(93,202,165,0.12);border:0.5px solid rgba(93,202,165,0.4);color:#5DCAA5;margin-top:24px;}
 .btn-export:hover{background:rgba(93,202,165,0.2);}
-.disclaim{font-size:11px;color:rgba(255,255,255,0.2);margin-top:20px;line-height:1.7;}
-.prefilled-banner{background:rgba(207,175,80,0.07);border:0.5px solid rgba(207,175,80,0.25);border-radius:6px;padding:10px 14px;margin-bottom:18px;font-size:12px;color:rgba(255,255,255,0.55);display:none;}
+
+.disclaim{font-size:11px;color:rgba(255,255,255,0.2);margin-top:24px;line-height:1.75;}
+
+.prefilled-banner{background:rgba(207,175,80,0.07);border:0.5px solid rgba(207,175,80,0.25);border-radius:6px;padding:12px 16px;margin-bottom:24px;font-size:13px;color:rgba(255,255,255,0.55);display:none;}
 .prefilled-banner strong{color:#CFAF50;}
-@media(max-width:540px){
-  body{padding:28px 14px;}
+
+/* ── Mobile ── */
+@media(max-width:600px){
+  .page{padding:32px 18px 60px;}
+  .ttl{font-size:24px;}
+  .card{padding:20px 18px;}
   .stats{grid-template-columns:1fr 1fr;}
   .irr-row{grid-template-columns:1fr;}
   .inp-hdr,.inp-row{grid-template-columns:1fr 1fr 36px 36px;}
   .inp-hdr span:nth-child(3),.inp-row input:nth-child(3){display:none;}
+  .legend{gap:12px;}
 }
 </style>
 </head>
 <body>
+<div class="page">
 
 <span class="tag">Forest carbon returns</span>
 <div class="client-addr" id="client-addr"></div>
@@ -92,10 +122,10 @@ select option{background:#1a2420;color:#fff;}
 <div class="card" id="results-card" style="display:none;">
   <div class="stats" id="stats"></div>
 
-  <div style="margin-bottom:20px;">
+  <div class="section-gap">
     <div class="sec-title">Annual net earnings</div>
     <p class="explainer">Each bar shows what your forest is expected to earn in that year after all costs. The first year (2026) shows a negative figure — this is the registration cost, which is a one-off. Gold bars are positive earning years.</p>
-    <div class="chart-wrap" style="height:220px;">
+    <div class="chart-wrap" style="height:320px;">
       <canvas id="c-ann" role="img" aria-label="Annual net earnings bar chart balanced scenario">Annual net earnings chart</canvas>
     </div>
   </div>
@@ -106,10 +136,10 @@ select option{background:#1a2420;color:#fff;}
     <span><span class="lsq" style="background:#5DCAA5"></span>Optimistic</span>
   </div>
 
-  <div style="margin-bottom:8px;">
+  <div class="section-gap">
     <div class="sec-title">Cumulative net earnings</div>
     <p class="explainer">This shows your total earnings building up over 25 years. Hover or drag across the chart to see the projected total at any point. The base carbon price used is the current 12-month volume weighted average NZU price from EMS Tradepoint. Three scenarios are shown — balanced assumes a 2% annual price increase, pessimistic assumes prices stay flat, and optimistic assumes a 3% annual increase.</p>
-    <div class="chart-wrap" style="height:240px;">
+    <div class="chart-wrap" style="height:340px;">
       <canvas id="c-cum" role="img" aria-label="Cumulative net earnings line chart three scenarios">Cumulative net earnings chart</canvas>
       <div class="tooltip-box" id="cum-tooltip">
         <div class="ty" id="tt-year"></div>
@@ -120,7 +150,7 @@ select option{background:#1a2420;color:#fff;}
     </div>
   </div>
 
-  <div style="margin-top:20px;margin-bottom:8px;">
+  <div>
     <div class="sec-title">Internal rate of return (IRR)</div>
     <p class="explainer">IRR is a way of measuring the overall return on an investment, similar to an interest rate. The higher the number, the stronger the return relative to what you put in. It takes into account both the costs and the timing of income over the 25-year period.</p>
   </div>
@@ -133,6 +163,8 @@ select option{background:#1a2420;color:#fff;}
 
   <p class="disclaim">Projections use MPI ETS standard carbon lookup tables. Redwood and exotic hardwood figures are based on proposed new New Zealand lookup tables and are subject to change. Returns are estimates only and subject to NZU price fluctuations. Registration costs include MOXI fees and MPI area-based registration fee. MPI annual levy $14.90/ha applies from year 1 (waived for native forest under 6 years of age).</p>
 </div>
+
+</div><!-- /page -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
@@ -316,7 +348,7 @@ function recalc(){
   if(cc)cc.destroy();
   if(ca)ca.destroy();
 
-  const isMobile=window.innerWidth<540;
+  const isMobile=window.innerWidth<600;
 
   ca=new Chart(document.getElementById('c-ann'),{
     type:'bar',
@@ -326,7 +358,7 @@ function recalc(){
       plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,20,16,0.97)',borderColor:'rgba(207,175,80,0.3)',borderWidth:1,titleColor:'rgba(255,255,255,0.9)',bodyColor:'rgba(255,255,255,0.6)',callbacks:{label:ctx=>'Net earnings: '+fmtC(ctx.parsed.y)}}},
       scales:{
         x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:isMobile?9:10},maxRotation:isMobile?90:45,autoSkip:isMobile,maxTicksLimit:isMobile?8:26},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
-        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:11},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
       }
     }
   });
@@ -341,33 +373,28 @@ function recalc(){
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{enabled:false}
-      },
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
       scales:{
-        x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},maxTicksLimit:7},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
-        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
+        x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:11},maxTicksLimit:8},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}},
+        y:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:11},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.08)'}}
       },
       onHover:(evt,elements,chart)=>{
         const tip=document.getElementById('cum-tooltip');
         if(!elements||elements.length===0){tip.style.display='none';return;}
         const idx=elements[0].index;
-        const balV=opt.slice(1)[idx]?.cum;
+        const balVV=bal.slice(1)[idx]?.cum;
         const optV=opt.slice(1)[idx]?.cum;
         const pesV=pes.slice(1)[idx]?.cum;
-        const balVV=bal.slice(1)[idx]?.cum;
         document.getElementById('tt-year').textContent=cumYears[idx];
         document.getElementById('tt-bal').textContent='Balanced: '+fmtC(balVV);
         document.getElementById('tt-opt').textContent='Optimistic: '+fmtC(optV);
         document.getElementById('tt-pes').textContent='Pessimistic: '+fmtC(pesV);
-        const canvasRect=document.getElementById('c-cum').getBoundingClientRect();
         const wrapRect=document.getElementById('c-cum').parentElement.getBoundingClientRect();
         const x=evt.native.clientX-wrapRect.left;
         const y=evt.native.clientY-wrapRect.top;
-        const tipW=150;
-        tip.style.left=(x+tipW>wrapRect.width?x-tipW-8:x+12)+'px';
-        tip.style.top=Math.max(0,y-40)+'px';
+        const tipW=170;
+        tip.style.left=(x+tipW>wrapRect.width?x-tipW-8:x+14)+'px';
+        tip.style.top=Math.max(0,y-50)+'px';
         tip.style.display='block';
       }
     }
