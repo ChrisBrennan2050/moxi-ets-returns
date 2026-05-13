@@ -15,7 +15,6 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;min-height:100vh;}
 
-/* ── Page shell ── */
 .page{max-width:860px;margin:0 auto;padding:56px 48px 80px;}
 
 .tag{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:10px;}
@@ -28,12 +27,20 @@ body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;min-height:100v
 
 .lbl{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#CFAF50;display:block;margin-bottom:10px;}
 
-.inp-hdr{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:10px;margin-bottom:6px;align-items:center;}
+.inp-hdr{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.1fr 36px 36px;gap:10px;margin-bottom:6px;align-items:center;}
 .inp-hdr span{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
 .inp-hdr .ctr{text-align:center;}
 
-.inp-row{display:grid;grid-template-columns:2.5fr 1.5fr 1.2fr 36px 36px;gap:10px;align-items:center;margin-bottom:10px;transition:opacity 0.2s;}
+.inp-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.1fr 36px 36px;gap:10px;align-items:center;margin-bottom:10px;transition:opacity 0.2s;}
 .inp-row.hidden-row{opacity:0.22;}
+
+/* Previous forest iOS-style toggle */
+.prev-toggle{display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
+.prev-toggle input[type=checkbox]{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
+.toggle-track{position:relative;width:38px;height:22px;border-radius:11px;background:rgba(255,255,255,0.18);transition:background 0.22s ease;flex-shrink:0;}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.35);transition:transform 0.22s ease,box-shadow 0.22s ease;}
+.prev-toggle input:checked + .toggle-track{background:#CFAF50;}
+.prev-toggle input:checked + .toggle-track .toggle-thumb{transform:translateX(16px);box-shadow:0 1px 4px rgba(0,0,0,0.4);}
 
 select,input[type=number]{background:rgba(255,255,255,0.07);border:0.5px solid rgba(207,175,80,0.3);border-radius:4px;color:#fff;font-size:13px;padding:8px 10px;width:100%;outline:none;font-family:'Lato',sans-serif;}
 select option{background:#1a2420;color:#fff;}
@@ -47,7 +54,7 @@ select option{background:#1a2420;color:#fff;}
 
 .btn-add{background:rgba(207,175,80,0.1);border:0.5px solid rgba(207,175,80,0.4);border-radius:4px;color:#CFAF50;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 18px;cursor:pointer;font-family:'Lato',sans-serif;margin-top:6px;}
 
-/* ── Stats grid — 3 cols, balanced on desktop ── */
+/* Stats grid */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
 .stat{background:rgba(255,255,255,0.05);border:0.5px solid rgba(207,175,80,0.12);border-radius:8px;padding:16px 14px;}
 .slbl{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
@@ -85,15 +92,17 @@ select option{background:#1a2420;color:#fff;}
 .prefilled-banner{background:rgba(207,175,80,0.07);border:0.5px solid rgba(207,175,80,0.25);border-radius:6px;padding:12px 16px;margin-bottom:24px;font-size:13px;color:rgba(255,255,255,0.55);display:none;}
 .prefilled-banner strong{color:#CFAF50;}
 
-/* ── Mobile ── */
+/* Residual carbon callout */
+.residual-note{background:rgba(216,90,48,0.07);border:0.5px solid rgba(216,90,48,0.25);border-radius:5px;padding:8px 12px;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.45);line-height:1.6;display:none;}
+
 @media(max-width:600px){
   .page{padding:32px 18px 60px;}
   .ttl{font-size:24px;}
   .card{padding:20px 18px;}
   .stats{grid-template-columns:1fr 1fr;}
   .irr-row{grid-template-columns:1fr;}
-  .inp-hdr,.inp-row{grid-template-columns:1fr 1fr 36px 36px;}
-  .inp-hdr span:nth-child(3),.inp-row input:nth-child(3){display:none;}
+  .inp-hdr,.inp-row{grid-template-columns:1.5fr 1fr 36px 36px;}
+  .inp-hdr span:nth-child(3),.inp-hdr span:nth-child(4),.inp-row .prev-col,.inp-row input:nth-child(3){display:none;}
   .legend{gap:12px;}
 }
 </style>
@@ -113,10 +122,13 @@ select option{background:#1a2420;color:#fff;}
 <div class="card">
   <span class="lbl">Forest areas</span>
   <div class="inp-hdr">
-    <span>Species</span><span>Area (ha)</span><span>Est. year</span><span class="ctr">Show</span><span></span>
+    <span>Species</span><span>Area (ha)</span><span>Est. year</span><span class="ctr">Prev. Forest</span><span class="ctr">Show</span><span></span>
   </div>
   <div id="rows"></div>
   <button class="btn-add" id="btn-add">+ Add forest area</button>
+  <div class="residual-note" id="residual-note">
+    One or more areas are marked as having a previous forest. An annual residual carbon liability (Pinus radiata harvested at age 28, one year before the establishment year) has been subtracted from carbon revenue for the first 10 years. Where this exceeds the annual carbon gain, that year's revenue is shown as zero. If the previous species or harvest age differed, actual residual carbon may vary — see disclaimer.
+  </div>
 </div>
 
 <div class="card" id="results-card" style="display:none;">
@@ -161,7 +173,7 @@ select option{background:#1a2420;color:#fff;}
     Download detailed data (CSV)
   </button>
 
-  <p class="disclaim">Projections use MPI ETS standard carbon lookup tables. Redwood and exotic hardwood figures are based on proposed new New Zealand lookup tables and are subject to change. Returns are estimates only and subject to NZU price fluctuations. Registration costs include MOXI fees and MPI area-based registration fee. MPI annual levy $14.90/ha applies from year 1 (waived for native forest under 6 years of age).</p>
+  <p class="disclaim">Projections use MPI ETS standard carbon lookup tables. Redwood and exotic hardwood figures are based on proposed new New Zealand lookup tables and are subject to change. Returns are estimates only and subject to NZU price fluctuations. Registration costs include MOXI fees and MPI area-based registration fee. MPI annual levy $14.90/ha applies from year 1 (waived for native forest under 6 years of age). Where a previous forest is indicated, residual carbon deductions assume Pinus radiata harvested at age 28, one year prior to the establishment year shown. Actual residual carbon will differ if a different species or harvest age applies.</p>
 </div>
 
 </div><!-- /page -->
@@ -171,14 +183,36 @@ select option{background:#1a2420;color:#fff;}
 (function(){
 const CY=2026;
 const NZU_BASE=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--NZU_PRICE'))||50.25;
-const REG=8000, MGMT=1500;
 const CATS=['Indigenous ETS Forest','Exotic Hardwoods ETS Forest','Exotic Softwoods ETS Forest','Pinus Radiata ETS Forest','Redwood ETS Forest'];
+
+// ── MOXI fee tiers [max_ha_exclusive, reg_fee, mgmt_fee] ──
+const MOXI_TIERS=[
+  [10,   6000,  750],
+  [20,   8000, 1500],
+  [50,  10000, 1500],
+  [100, 12000, 1500],
+  [99999,14000,1500], // 100ha+ extrapolated; update when confirmed
+];
+// MPI fee tiers [max_ha_exclusive, mpi_fee]
 const MPI_TIERS=[[10,488.89],[50,1815],[100,1980],[500,2640],[99999,4125]];
+
+function moxiFees(ha){
+  for(const[k,reg,mgmt]of MOXI_TIERS){if(ha<k)return{reg,mgmt};}
+  return{reg:14000,mgmt:1500};
+}
 function mpiReg(ha){for(const[k,v]of MPI_TIERS){if(ha<k)return v;}return 4125;}
+function moxiTierLabel(ha){
+  if(ha<10)return '<10 ha';
+  if(ha<20)return '10–20 ha';
+  if(ha<50)return '20–50 ha';
+  if(ha<100)return '50–100 ha';
+  return '100+ ha';
+}
 
 const EYE_ON=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="#CFAF50" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="#CFAF50" stroke-width="1.3"/></svg>`;
 const EYE_OFF=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.3"/><line x1="2" y1="2" x2="14" y2="14" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round"/></svg>`;
 
+// ── Carbon stock change tables (NZU/ha/year) ──
 const DELTA={
   'Indigenous ETS Forest':[0,0.6,0.6,1.3,2.1,3.2,4.3,5.4,6.5,7.6,8.6,9.6,10.5,11.2,11.8,12.2,12.6,12.7,12.8,12.7,12.4,12.2,11.7,11.3,10.8,10.3,9.6,9.1,8.5,7.9,7.4,6.8,6.3,5.7,5.3,4.9,4.4,4.1,3.7,3.3,3.1,2.7,2.6,2.2,2.1,1.8,1.7],
   'Exotic Hardwoods ETS Forest':[0,0.3,1.7,5,17,27,28,35,39,42,43,45,46,26,25,26,26,26,25,22,27,30,32,35,35,36,37,37,36,37,36,35,35,35,34,33,32,32,31,30,30,28,28,27,26,26,25],
@@ -197,17 +231,45 @@ const DELTA={
   }
 };
 
+// ── Residual carbon at year 0 (age 28 harvest) by region ──
+// Values represent NZU/ha remaining after Pinus radiata harvest
+// Linearly declines to zero over 10 years
+const RESIDUAL_STOCK={
+  'Auckland':350,'Waikato/Taupo':331,'Bay of Plenty':310,'Gisborne':352,
+  'Hawkes Bay/SNI':348,'Nelson/Marlborough':280,
+  'Canterbury/West Coast':233,'Otago':272,'Southland':308
+};
+// Non-Pinus regions — use Bay of Plenty as fallback (should not occur in practice)
+
 function getDelta(cat,region,age){
   if(age<0)return 0;
   let tbl=cat==='Pinus Radiata ETS Forest'?DELTA[cat][region]||DELTA[cat]['Bay of Plenty']:DELTA[cat];
   if(!tbl)return 0;
   return tbl[Math.min(Math.round(age),tbl.length-1)]||0;
 }
+
+// Build cumulative carbon stock array for a forest polygon (no residual adjustment here)
 function buildStock(f,region){
   let cum=0,rows=[];
-  for(let i=0;i<=25;i++){cum+=getDelta(f.cat,region,CY-f.yr+i);rows.push(cum*f.ha);}
+  for(let i=0;i<=25;i++){
+    cum+=getDelta(f.cat,region,CY-f.yr+i);
+    rows.push(cum*f.ha);
+  }
   return rows;
 }
+
+// Return the annual residual carbon liability (NZU total, not per ha) for a polygon in year i
+// Previous forest assumed harvested at (yr-1); residual declines linearly over 10 years
+function getAnnualResidual(f,region,i){
+  if(!f.prev)return 0;
+  const yearsAfterClear=CY-f.yr+i+1; // harvest was 1 year before establishment
+  const y=Math.round(yearsAfterClear);
+  if(y<0||y>10)return 0;
+  const base=RESIDUAL_STOCK[region]||RESIDUAL_STOCK['Bay of Plenty'];
+  // Residual declines by base/10 per year; annual liability = base/10 per year
+  return (base/10)*f.ha;
+}
+
 function nzuPrice(sc,i){
   if(sc==='pes')return NZU_BASE;
   if(sc==='bal')return NZU_BASE*Math.pow(1.02,i);
@@ -228,7 +290,7 @@ function fmtC(v){
 }
 function fmtK(v){const a=Math.abs(v);return(v<0?'-':'')+'$'+(a>=1000?Math.round(a/1000)+'k':Math.round(a));}
 
-function calcProj(sc,active,region){
+function calcProj(sc,active,region,regFee,mgmtFee){
   const totalHa=active.reduce((s,f)=>s+f.ha,0);
   const mpiR=mpiReg(totalHa);
   const stocks=active.map(f=>buildStock(f,region));
@@ -237,8 +299,13 @@ function calcProj(sc,active,region){
     const stock=stocks.reduce((s,t)=>s+t[i],0);
     const change=stock-prev;
     const price=nzuPrice(sc,i);
-    const rev=i===0?0:Math.max(0,Math.round(change*price));
-    const costs=i===0?-(REG+mpiR+calcMpi(i,active)):-(MGMT+calcMpi(i,active));
+    // Gross carbon revenue from stock change
+    const grossRev=i===0?0:Math.max(0,Math.round(change*price));
+    // Residual carbon liability: subtract from revenue, floor at zero
+    const residualNZU=i===0?0:active.reduce((s,f)=>s+getAnnualResidual(f,region,i),0);
+    const residualCost=Math.round(residualNZU*price);
+    const rev=Math.max(0,grossRev-residualCost);
+    const costs=i===0?-(regFee+mpiR+calcMpi(i,active)):-(mgmtFee+calcMpi(i,active));
     const net=Math.round(rev+costs);
     cum+=net;
     rows.push({year:CY+i,stock:Math.round(stock*10)/10,change:Math.round(change*10)/10,price:Math.round(price*100)/100,rev,costs:Math.round(costs),net,cum:Math.round(cum)});
@@ -248,20 +315,33 @@ function calcProj(sc,active,region){
 }
 
 function irr(cf){
-  let r=0.5;
-  for(let i=0;i<200;i++){
+  // IRR is only meaningful if cash flows change sign (investment eventually recovers)
+  const hasPositive=cf.some(v=>v>0);
+  const hasNegative=cf.some(v=>v<0);
+  if(!hasPositive||!hasNegative)return null;
+  // Check cumulative cash flow reaches positive at some point
+  let cum=0;
+  const everPositive=cf.some(v=>{cum+=v;return cum>0;});
+  if(!everPositive)return null;
+  // Newton-Raphson with bounded starting point and sanity ceiling
+  let r=0.1;
+  for(let i=0;i<300;i++){
     let n=0,d=0;
     cf.forEach((c,j)=>{const x=Math.pow(1+r,j);n+=c/x;d-=j*c/Math.pow(1+r,j+1);});
     if(Math.abs(d)<1e-12)break;
-    const nr=r-n/d;if(Math.abs(nr-r)<1e-9){r=nr;break;}
-    r=Math.max(-0.99,nr);
+    const nr=r-n/d;
+    if(Math.abs(nr-r)<1e-9){r=nr;break;}
+    r=Math.max(-0.99,Math.min(nr,10)); // clamp to -99%..1000% during iteration
   }
-  return isFinite(r)&&r>-1?Math.round(r*1000)/10:null;
+  if(!isFinite(r)||r<=-1||r>9.99)return null; // reject implausible results (>999%)
+  return Math.round(r*1000)/10;
 }
 
-let forests=[{id:1,cat:'Indigenous ETS Forest',ha:10,yr:2010,on:true}];
+let forests=[{id:1,cat:'Indigenous ETS Forest',ha:10,yr:2010,on:true,prev:false}];
 let nid=2,region='Bay of Plenty';
+let regFee=8000,mgmtFee=1500;
 let cc=null,ca=null,lastBal=null,lastPes=null,lastOpt=null,lastActive=[];
+let lastRegFee=8000,lastMgmtFee=1500;
 
 function loadFromHash(){
   const hash=window.location.hash.slice(1);
@@ -277,25 +357,40 @@ function loadFromHash(){
     }
     if(d.region)region=d.region;
     if(d.forests&&d.forests.length){
-      forests=d.forests.map((f,i)=>({id:i+1,cat:f.cat,ha:f.ha,yr:f.yr,on:true}));
+      forests=d.forests.map((f,i)=>({id:i+1,cat:f.cat,ha:f.ha,yr:f.yr,on:true,prev:f.prev||false}));
       nid=forests.length+1;
     }
+    // Fees from hash take priority; fall back to schedule below
+    if(d.reg!=null)regFee=d.reg;
+    if(d.mgmt!=null)mgmtFee=d.mgmt;
   }catch(e){}
 }
 
 function renderRows(){
   const el=document.getElementById('rows');
+  const anyPrev=forests.some(f=>f.on&&f.prev);
+  document.getElementById('residual-note').style.display=anyPrev?'block':'none';
   el.innerHTML=forests.map(f=>`
-    <div class="inp-row${f.on?'':' hidden-row'}" data-id="${f.id}">
+    <div class="inp-row${f.on?'':' hidden-row'}${f.prev?' prev-active':''}" data-id="${f.id}">
       <select class="fc" data-id="${f.id}">${CATS.map(c=>`<option value="${c}"${c===f.cat?' selected':''}>${c.replace(' ETS Forest','')}</option>`).join('')}</select>
       <input type="number" class="fha" value="${f.ha}" min="0.1" max="999" step="0.1" data-id="${f.id}">
       <input type="number" class="fyr" value="${f.yr}" min="1990" max="2025" step="1" data-id="${f.id}">
+      <label class="prev-toggle prev-col" title="Toggle if this area previously had a harvested forest before planting">
+        <input type="checkbox" class="fprev" data-id="${f.id}"${f.prev?' checked':''}>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </label>
       <button class="btn-eye ftog${f.on?'':' eye-off'}" data-id="${f.id}" title="${f.on?'Hide':'Show'}">${f.on?EYE_ON:EYE_OFF}</button>
       <button class="btn-del fdel" data-id="${f.id}">×</button>
     </div>`).join('');
   el.querySelectorAll('.fc').forEach(e=>e.addEventListener('change',ev=>{forests.find(f=>f.id==ev.target.dataset.id).cat=ev.target.value;recalc();}));
   el.querySelectorAll('.fha').forEach(e=>e.addEventListener('input',ev=>{forests.find(f=>f.id==ev.target.dataset.id).ha=parseFloat(ev.target.value)||0;recalc();}));
   el.querySelectorAll('.fyr').forEach(e=>e.addEventListener('input',ev=>{forests.find(f=>f.id==ev.target.dataset.id).yr=parseInt(ev.target.value)||2000;recalc();}));
+  el.querySelectorAll('.fprev').forEach(e=>e.addEventListener('change',ev=>{
+    const f=forests.find(f=>f.id==ev.target.dataset.id);
+    f.prev=ev.target.checked;
+    ev.target.closest('.inp-row').classList.toggle('prev-active',f.prev);
+    renderRows();recalc();
+  }));
   el.querySelectorAll('.ftog').forEach(e=>e.addEventListener('click',ev=>{
     const btn=ev.currentTarget;
     const f=forests.find(f=>f.id==btn.dataset.id);
@@ -315,22 +410,27 @@ function recalc(){
   if(active.length===0){rc.style.display='none';return;}
   rc.style.display='block';
 
-  const bal=calcProj('bal',active,region);
-  const pes=calcProj('pes',active,region);
-  const opt=calcProj('opt',active,region);
-  lastBal=bal;lastPes=pes;lastOpt=opt;
+  // If fees weren't set from hash, derive from schedule based on current active area
+  const totalHa=active.reduce((s,f)=>s+f.ha,0);
+  const scheduledFees=moxiFees(totalHa);
+  const activeRegFee = regFee || scheduledFees.reg;
+  const activeMgmtFee = mgmtFee || scheduledFees.mgmt;
+
+  const bal=calcProj('bal',active,region,activeRegFee,activeMgmtFee);
+  const pes=calcProj('pes',active,region,activeRegFee,activeMgmtFee);
+  const opt=calcProj('opt',active,region,activeRegFee,activeMgmtFee);
+  lastBal=bal;lastPes=pes;lastOpt=opt;lastRegFee=activeRegFee;lastMgmtFee=activeMgmtFee;
 
   const disp=bal;
   const years=disp.map(r=>r.year);
   const cumYears=bal.slice(1).map(r=>r.year);
   const bep=bal.findIndex((r,i)=>i>0&&r.cum>0);
-  const totalHa=active.reduce((s,f)=>s+f.ha,0);
   const mpiR=mpiReg(totalHa);
   const irrBal=irr(bal.map(r=>r.net));
   const irrPes=irr(pes.map(r=>r.net));
   const irrOpt=irr(opt.map(r=>r.net));
 
-  const setupCost=REG+mpiR+calcMpi(0,active);
+  const setupCost=activeRegFee+mpiR+calcMpi(0,active);
   const yr1net=bal[1]?.net||0;
   document.getElementById('stats').innerHTML=`
     <div class="stat"><div class="slbl">Forest area</div><div class="snum">${Math.round(totalHa*10)/10} ha</div><div class="ssub">Active areas</div></div>
@@ -410,9 +510,9 @@ function downloadCSV(){
   const lines=['MOXI ETS Returns Analysis'];
   const addr=document.getElementById('client-addr').textContent;
   if(addr)lines.push(`Property,${addr}`);
-  lines.push(`ETS Region,${region}`,`NZU base price,$${NZU_BASE}`,`Generated,${new Date().toLocaleDateString('en-NZ')}`,'');
-  lines.push('Forest Areas','Species,Area (ha),Est. Year');
-  lastActive.forEach(f=>lines.push(`"${f.cat}",${f.ha},${f.yr}`));
+  lines.push(`ETS Region,${region}`,`NZU base price,$${NZU_BASE}`,`Generated,${new Date().toLocaleDateString('en-NZ')}`,`Registration fee,$${lastRegFee}`,`Annual management fee,$${lastMgmtFee}`,'');
+  lines.push('Forest Areas','Species,Area (ha),Est. Year,Previous Forest');
+  lastActive.forEach(f=>lines.push(`"${f.cat}",${f.ha},${f.yr},${f.prev?'Yes':'No'}`));
   lines.push('');
   lines.push(['','Year 0',...lastBal.slice(1).map(r=>r.year)].join(','));
   function addRow(lbl,vals){lines.push([`"${lbl}"`,...vals.map(v=>Math.round(v)===0?'-':Math.round(v))].join(','));}
@@ -439,7 +539,7 @@ function downloadCSV(){
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
-document.getElementById('btn-add').addEventListener('click',()=>{forests.push({id:nid++,cat:'Indigenous ETS Forest',ha:5,yr:2015,on:true});renderRows();recalc();});
+document.getElementById('btn-add').addEventListener('click',()=>{forests.push({id:nid++,cat:'Indigenous ETS Forest',ha:5,yr:2015,on:true,prev:false});renderRows();recalc();});
 document.getElementById('btn-csv').addEventListener('click',downloadCSV);
 
 loadFromHash();
