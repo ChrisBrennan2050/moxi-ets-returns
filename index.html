@@ -325,12 +325,14 @@ function calcProj(sc,active,region,regFee,mgmtFee){
     const stock=stocks.reduce((s,t)=>s+t[i],0);
     const change=stock-prev;
     const price=nzuPrice(sc,i);
-    // Gross carbon revenue from stock change
-    const grossRev=i===0?0:Math.max(0,Math.round(change*price));
-    // Residual carbon liability: subtract from revenue, floor at zero
-    const residualNZU=i===0?0:active.reduce((s,f)=>s+getAnnualResidual(f,region,i),0);
-    const residualCost=Math.round(residualNZU*price);
-    const rev=Math.max(0,grossRev-residualCost);
+    // Calculate each polygon's revenue net of its own residual liability, floored at zero
+    // This ensures the residual penalty cannot spill over and reduce other polygons' earnings
+    const rev=i===0?0:active.reduce((s,f,fi)=>{
+      const polyChange=stocks[fi][i]-(i>0?stocks[fi][i-1]:0);
+      const polyGross=Math.max(0,Math.round(polyChange*price));
+      const polyResidual=Math.round(getAnnualResidual(f,region,i)*price);
+      return s+Math.max(0,polyGross-polyResidual);
+    },0);
     const costs=i===0?-(regFee+mpiR+calcMpi(i,active)):-(mgmtFee+calcMpi(i,active));
     const net=Math.round(rev+costs);
     cum+=net;
