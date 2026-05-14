@@ -31,8 +31,39 @@ body{font-family:'Lato',sans-serif;background:#0f1a16;color:#fff;min-height:100v
 .inp-hdr span{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
 .inp-hdr .ctr{text-align:center;}
 
+/* Desktop: 6-col grid. row-meta-wrap is display:contents so its 3 children flow as grid cells */
 .inp-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.1fr 36px 36px;gap:10px;align-items:center;margin-bottom:10px;transition:opacity 0.2s;}
 .inp-row.hidden-row{opacity:0.22;}
+.row-meta-wrap{display:contents;}
+.row-meta-label{display:none;}
+.row-meta-field{display:flex;align-items:center;} /* grid item on desktop — input fills cell */
+.row-meta-toggle{display:flex;align-items:center;justify-content:center;}
+
+/* Mobile: stacked card */
+@media(max-width:600px){
+  .inp-hdr{display:none;}
+  .inp-row{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    gap:8px;
+    background:rgba(255,255,255,0.03);
+    border:0.5px solid rgba(207,175,80,0.15);
+    border-radius:6px;
+    padding:10px 12px;
+    margin-bottom:8px;
+    align-items:center;
+  }
+  .inp-row.hidden-row{opacity:0.22;}
+  .inp-row > .fc{grid-column:1;grid-row:1;}
+  .inp-row > .btn-eye{grid-column:2;grid-row:1;}
+  .inp-row > .btn-del{grid-column:3;grid-row:1;}
+  /* row-meta-wrap becomes a flex row spanning full width on row 2 */
+  .row-meta-wrap{display:flex;gap:8px;align-items:flex-end;grid-column:1/-1;grid-row:2;}
+  .row-meta-field{display:flex;flex-direction:column;gap:3px;flex:1;}
+  .row-meta-toggle{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;}
+  .row-meta-label{display:block;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);}
+  .row-meta-field input[type=number]{font-size:12px;padding:5px 8px;width:100%;}
+}
 
 /* Previous forest iOS-style toggle */
 .prev-toggle{display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
@@ -101,8 +132,6 @@ select option{background:#1a2420;color:#fff;}
   .card{padding:20px 18px;}
   .stats{grid-template-columns:1fr 1fr;}
   .irr-row{grid-template-columns:1fr;}
-  .inp-hdr,.inp-row{grid-template-columns:1.5fr 1fr 36px 36px;}
-  .inp-hdr span:nth-child(3),.inp-hdr span:nth-child(4),.inp-row .prev-col,.inp-row input:nth-child(3){display:none;}
   .legend{gap:12px;}
 }
 </style>
@@ -188,26 +217,23 @@ const CATS=['Indigenous ETS Forest','Exotic Hardwoods ETS Forest','Exotic Softwo
 // ── MOXI fee tiers [max_ha_exclusive, reg_fee, mgmt_fee] ──
 const MOXI_TIERS=[
   [10,   6000,  750],
-  [20,   8000, 1500],
-  [50,  10000, 1500],
-  [100, 12000, 1500],
-  [99999,14000,1500], // 100ha+ extrapolated; update when confirmed
+  [50,   8000, 1500],
+  [100, 10000, 1500],
 ];
 // MPI fee tiers [max_ha_exclusive, mpi_fee]
 const MPI_TIERS=[[10,488.89],[50,1815],[100,1980],[500,2640],[99999,4125]];
 
 function moxiFees(ha){
   for(const[k,reg,mgmt]of MOXI_TIERS){if(ha<k)return{reg,mgmt};}
-  return{reg:14000,mgmt:1500};
+  return null; // 100ha+ — fee TBC
 }
-function mpiReg(ha){for(const[k,v]of MPI_TIERS){if(ha<k)return v;}return 4125;}
 function moxiTierLabel(ha){
   if(ha<10)return '<10 ha';
-  if(ha<20)return '10–20 ha';
-  if(ha<50)return '20–50 ha';
+  if(ha<50)return '10–50 ha';
   if(ha<100)return '50–100 ha';
   return '100+ ha';
 }
+function mpiReg(ha){for(const[k,v]of MPI_TIERS){if(ha<k)return v;}return 4125;}
 
 const EYE_ON=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="#CFAF50" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="#CFAF50" stroke-width="1.3"/></svg>`;
 const EYE_OFF=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.3"/><line x1="2" y1="2" x2="14" y2="14" stroke="rgba(255,255,255,0.2)" stroke-width="1.3" stroke-linecap="round"/></svg>`;
@@ -339,9 +365,9 @@ function irr(cf){
 
 let forests=[{id:1,cat:'Indigenous ETS Forest',ha:10,yr:2010,on:true,prev:false}];
 let nid=2,region='Bay of Plenty';
-let regFee=8000,mgmtFee=1500;
+let regFee=0,mgmtFee=0; // 0 = not set by hash; recalc derives from schedule
 let cc=null,ca=null,lastBal=null,lastPes=null,lastOpt=null,lastActive=[];
-let lastRegFee=8000,lastMgmtFee=1500;
+let lastRegFee=0,lastMgmtFee=0;
 
 function loadFromHash(){
   const hash=window.location.hash.slice(1);
@@ -373,12 +399,23 @@ function renderRows(){
   el.innerHTML=forests.map(f=>`
     <div class="inp-row${f.on?'':' hidden-row'}${f.prev?' prev-active':''}" data-id="${f.id}">
       <select class="fc" data-id="${f.id}">${CATS.map(c=>`<option value="${c}"${c===f.cat?' selected':''}>${c.replace(' ETS Forest','')}</option>`).join('')}</select>
-      <input type="number" class="fha" value="${f.ha}" min="0.1" max="999" step="0.1" data-id="${f.id}">
-      <input type="number" class="fyr" value="${f.yr}" min="1990" max="2025" step="1" data-id="${f.id}">
-      <label class="prev-toggle prev-col" title="Toggle if this area previously had a harvested forest before planting">
-        <input type="checkbox" class="fprev" data-id="${f.id}"${f.prev?' checked':''}>
-        <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      </label>
+      <div class="row-meta-wrap">
+        <div class="row-meta-field">
+          <span class="row-meta-label">Area (ha)</span>
+          <input type="number" class="fha" value="${f.ha}" min="0.1" max="999" step="0.1" data-id="${f.id}">
+        </div>
+        <div class="row-meta-field">
+          <span class="row-meta-label">Est. year</span>
+          <input type="number" class="fyr" value="${f.yr}" min="1990" max="2025" step="1" data-id="${f.id}">
+        </div>
+        <div class="row-meta-toggle">
+          <span class="row-meta-label">Prev. forest</span>
+          <label class="prev-toggle prev-col" title="Toggle if this area previously had a harvested forest before planting">
+            <input type="checkbox" class="fprev" data-id="${f.id}"${f.prev?' checked':''}>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
       <button class="btn-eye ftog${f.on?'':' eye-off'}" data-id="${f.id}" title="${f.on?'Hide':'Show'}">${f.on?EYE_ON:EYE_OFF}</button>
       <button class="btn-del fdel" data-id="${f.id}">×</button>
     </div>`).join('');
@@ -413,8 +450,19 @@ function recalc(){
   // If fees weren't set from hash, derive from schedule based on current active area
   const totalHa=active.reduce((s,f)=>s+f.ha,0);
   const scheduledFees=moxiFees(totalHa);
-  const activeRegFee = regFee || scheduledFees.reg;
-  const activeMgmtFee = mgmtFee || scheduledFees.mgmt;
+  const activeRegFee = regFee || (scheduledFees ? scheduledFees.reg : 0);
+  const activeMgmtFee = mgmtFee || (scheduledFees ? scheduledFees.mgmt : 0);
+
+  // Over 100ha — fee not set, show TBC notice instead of projections
+  if(!scheduledFees && !regFee){
+    document.getElementById('stats').innerHTML=`
+      <div class="stat" style="grid-column:span 3"><div class="slbl">Forest area</div><div class="snum">${Math.round(totalHa*10)/10} ha</div><div class="ssub">Active areas</div></div>
+      <div class="stat" style="grid-column:span 3"><div class="slbl">Setup cost</div><div class="snum" style="font-size:15px;color:rgba(207,175,80,0.6);">TBC</div><div class="ssub">Properties over 100 ha — contact Moxi for a fee</div></div>`;
+    if(cc)cc.destroy();if(ca)ca.destroy();cc=null;ca=null;
+    document.getElementById('irr-row').innerHTML='';
+    document.getElementById('inv-tbl-wrap').innerHTML='';
+    return;
+  }
 
   const bal=calcProj('bal',active,region,activeRegFee,activeMgmtFee);
   const pes=calcProj('pes',active,region,activeRegFee,activeMgmtFee);
